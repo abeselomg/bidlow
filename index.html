@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bidlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #ffffff;
+      --ink: #222222;
+      --muted: #6a6a6a;
+      --line: #dddddd;
+      --green: #12824c;
+      --green-dark: #0d683d;
+      --moss: #e7f3ec;
+      --danger: #c13515;
+      --text: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--text);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    button, input { font: inherit; color: inherit; }
+
+    button { cursor: pointer; }
+
+    h1, h2, p { margin: 0; }
+
+    :focus { outline: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
+    }
+
+    .frame {
+      width: min(1280px, calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-height: 80px;
+    }
+
+    .brand {
+      margin-right: auto;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--green);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .nav { display: flex; gap: 18px; }
+
+    .nav button {
+      padding: 0;
+      border: 0;
+      background: none;
+      font-weight: 500;
+    }
+
+    .nav button[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .who label { color: var(--muted); font-size: 14px; }
+
+    .who input {
+      width: 7.5rem;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font-weight: 600;
+    }
+
+    .page-head { padding: 28px 0 8px; }
+
+    .page-head h1 {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .page-head p {
+      max-width: 42ch;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 40px 16px;
+      padding: 18px 0 24px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      appearance: none;
+      text-align: left;
+    }
+
+    .card-photo {
+      aspect-ratio: 20 / 19;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--moss);
+    }
+
+    .card-photo img,
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: var(--moss);
+    }
+
+    .card-photo img { transition: transform 200ms ease; }
+
+    .card:hover .card-photo img { transform: scale(1.04); }
+
+    .card-name {
+      display: block;
+      margin-top: 12px;
+      overflow: hidden;
+      font-weight: 600;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .card-item,
+    .card-count {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--muted);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .card-amount {
+      display: block;
+      margin-top: 6px;
+    }
+
+    .card-amount strong,
+    .price strong { font-weight: 600; }
+
+    .empty { padding: 24px 0 8px; }
+
+    .empty p { margin-bottom: 12px; }
+
+    .back { margin: 24px 0 12px; }
+
+    .listing h1 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .item-line {
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      grid-template-rows: 196px 196px;
+      gap: 8px;
+      margin-top: 16px;
+      overflow: hidden;
+      border-radius: 16px;
+      background: var(--moss);
+    }
+
+    .gallery img:first-child { grid-row: 1 / span 2; }
+
+    .detail {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 64px;
+      align-items: start;
+      margin-top: 32px;
+    }
+
+    .story p { max-width: 62ch; }
+
+    .story p + p { margin-top: 12px; }
+
+    .book {
+      position: sticky;
+      top: 104px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .price { font-size: 22px; }
+
+    .book .count {
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .book .hint {
+      max-width: 36ch;
+      margin-top: 12px;
+      color: var(--muted);
+    }
+
+    .book label { display: block; margin: 16px 0 6px; font-weight: 600; }
+
+    .bid-input,
+    .text-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #b0b0b0;
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .bid-input { font-size: 22px; font-weight: 600; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 48px;
+      margin-top: 16px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--green);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn:hover { background: var(--green-dark); }
+
+    .modal-back {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(34, 34, 34, 0.45);
+    }
+
+    .modal {
+      width: min(420px, 100%);
+      padding: 24px;
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .modal h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .modal p { max-width: 36ch; margin-top: 8px; }
+
+    .modal .price { margin-top: 16px; }
+
+    body.modal-open { overflow: hidden; }
+
+    .btn.text {
+      width: auto;
+      min-height: 44px;
+      margin-top: 16px;
+      padding: 0;
+      background: none;
+      color: var(--ink);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn.text:hover { background: none; color: var(--green); }
+
+    .notice {
+      margin: 16px 0 0;
+      color: var(--danger);
+      max-width: 52ch;
+    }
+
+    .notice:empty { display: none; }
+
+    .results {
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .results li {
+      display: grid;
+      grid-template-columns: 4.5rem 5.5rem minmax(0, 1fr);
+      gap: 8px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .results .num { font-weight: 700; }
+
+    .results .shared .num {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .results .wins .num,
+    .results .wins .mark { color: var(--green); }
+
+    .winner-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .winner-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) auto;
+      gap: 16px;
+      align-items: baseline;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .winner-name { font-weight: 600; }
+
+    .winner-bid { font-weight: 600; }
+
+    .outcome { margin-top: 8px; font-weight: 600; }
+
+    .foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      align-items: center;
+      margin-top: 64px;
+      padding: 24px 0 40px;
+      border-top: 1px solid var(--line);
+    }
+
+    .foot p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .foot .btn.text { margin-top: 0; }
+
+    .noscript {
+      width: min(1280px, calc(100% - 48px));
+      margin: 24px auto;
+    }
+
+    @media (max-width: 1100px) {
+      .catalog { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 800px) {
+      .catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .detail { grid-template-columns: 1fr; gap: 28px; }
+      .book { position: static; }
+      .gallery {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 220px 140px 140px;
+      }
+      .gallery img:first-child { grid-column: 1 / span 2; grid-row: auto; }
+    }
+
+    @media (max-width: 720px) {
+      .frame { width: min(1280px, calc(100% - 32px)); }
+      .bar { flex-wrap: wrap; min-height: 0; padding: 14px 0; }
+      .who { order: 3; }
+    }
+
+    @media (max-width: 560px) {
+      .catalog { grid-template-columns: 1fr; }
+      .gallery { display: block; border-radius: 12px; }
+      .gallery img { display: none; aspect-ratio: 1; border-radius: 12px; }
+      .gallery img:first-child { display: block; }
+      .winner-list li { grid-template-columns: 1fr; gap: 2px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-photo img { transition: none; }
+      .card:hover .card-photo img { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <noscript class="noscript">
+    <p>This walkthrough needs JavaScript to move through the prizes and the bid.</p>
+  </noscript>
+  <script>
+    const STORAGE_KEY = "bidlow-walkthrough-v4";
+
+    function photo(id) {
+      return "https://images.unsplash.com/photo-" + id + "?auto=format&fit=crop&w=1200&q=80";
+    }
+
+    const photoSets = {
+      lamp: [
+        "1507473885765-e6ed057f782c",
+        "1513506003901-1e6a229e2d15",
+        "1524484485831-a92ffc0de03f",
+        "1494438639946-1ebd1d20bf85",
+        "1540932239986-30128078f3c5"
+      ].map(photo),
+      lisbon: [
+        "1555881400-74d7acaacd8b",
+        "1585208798174-6cedd86e019a",
+        "1558370781-d6196949e317",
+        "1588668214407-6ea9a6d8c272",
+        "1533106497176-45ae19e68ba2"
+      ].map(photo),
+      wool: [
+        "1584100936595-c0654b55a2e2",
+        "1616486338812-3dadae4b4ace",
+        "1555041469-a586c61ea9bc",
+        "1540518614846-7eded433c457",
+        "1567016432779-094069958ea5"
+      ].map(photo),
+      bike: [
+        "1485965120184-e220f721d03e",
+        "1571068316344-75bc76f77890",
+        "1507035895480-2b3156c31fc8",
+        "1532298229144-0ec0c57515c7",
+        "1576435728678-68d0fbf94e91"
+      ].map(photo),
+      bowl: [
+        "1610701596007-11502861dcfa",
+        "1565193566173-7a0ee3dbe261",
+        "1610701596061-2ecf227e85b2",
+        "1414235077428-338989a2e8c0",
+        "1493770348161-369560ae357d"
+      ].map(photo),
+      kettle: [
+        "1544787219-7f47ccb76574",
+        "1495474472287-4d71bcdd2085",
+        "1511920170033-f8396924c348",
+        "1509042239860-f550ce710b93",
+        "1497935586351-b67a49e012bf"
+      ].map(photo),
+      parcel: [
+        "1523275335684-37898b6baf30",
+        "1526170375885-4d8ecf77b99f",
+        "1441986300917-64674bd600d8",
+        "1472851294608-062f824d29cc",
+        "1441984904996-e0b6ba687e04"
+      ].map(photo)
+    };
+
+    function seedPrizes() {
+      return [
+        {
+          id: "lamp",
+          title: "Stoneware lamp",
+          note: "Glazed lamp, about 40 cm tall",
+          details: "Thrown in a small studio and glazed in a pale grey-green. It takes a standard bulb. The winner takes the lamp home.",
+          entryCents: 400,
+          status: "open",
+          motif: "lamp",
+          paid: [],
+          bids: [
+            { name: "Jonah", cents: 50 },
+            { name: "Priya", cents: 50 },
+            { name: "Lena", cents: 125 },
+            { name: "Sam", cents: 200 }
+          ]
+        },
+        {
+          id: "lisbon",
+          title: "Two nights in Lisbon",
+          note: "A room in Alfama, breakfast included",
+          details: "Two nights in a tiled room above a bakery in Alfama. Breakfast is included. Travel to the city is not.",
+          entryCents: 800,
+          status: "closed",
+          motif: "lisbon",
+          paid: [],
+          bids: [
+            { name: "Nora", cents: 50 },
+            { name: "Chris", cents: 50 },
+            { name: "Ayo", cents: 75 },
+            { name: "Mina", cents: 120 },
+            { name: "Jules", cents: 120 },
+            { name: "Ren", cents: 200 },
+            { name: "Sol", cents: 310 }
+          ]
+        },
+        {
+          id: "wool",
+          title: "White pillow",
+          note: "Cotton pillow on a yellow ground",
+          details: "A plump cotton pillow, photographed on a flat yellow ground. It is new and still in its case.",
+          entryCents: 600,
+          status: "open",
+          motif: "wool",
+          paid: [],
+          bids: [
+            { name: "Noah", cents: 80 },
+            { name: "Imani", cents: 140 },
+            { name: "Theo", cents: 140 }
+          ]
+        },
+        {
+          id: "bike",
+          title: "City bicycle",
+          note: "Step-through frame with a rear rack",
+          details: "A used city bicycle with a upright riding position, a bell, and a rack. It is tuned and ready to ride.",
+          entryCents: 500,
+          status: "open",
+          motif: "bike",
+          paid: [],
+          bids: [
+            { name: "Elena", cents: 210 },
+            { name: "Omar", cents: 90 }
+          ]
+        },
+        {
+          id: "bowl",
+          title: "Breakfast set",
+          note: "Four bowls and four cups",
+          details: "A matching set of four bowls and four cups in speckled clay. They are dishwasher safe.",
+          entryCents: 350,
+          status: "open",
+          motif: "bowl",
+          paid: [],
+          bids: [
+            { name: "Maya", cents: 40 },
+            { name: "Hugo", cents: 40 },
+            { name: "Leah", cents: 65 },
+            { name: "Chris", cents: 110 },
+            { name: "Ruth", cents: 250 }
+          ]
+        },
+        {
+          id: "kettle",
+          title: "Coffee and cookies",
+          note: "A mug of coffee with two cookies",
+          details: "A white mug of coffee and two cookies on a wooden board. The set is for one person.",
+          entryCents: 250,
+          status: "open",
+          motif: "kettle",
+          paid: [],
+          bids: [
+            { name: "Paul", cents: 175 }
+          ]
+        }
+      ];
+    }
+
+    function seedHistory() {
+      return [
+        { prizeId: "lisbon", name: "Ayo", prize: "Two nights in Lisbon", cents: 75 },
+        { prizeId: "apron", name: "Leah", prize: "Linen apron", cents: 55 },
+        { prizeId: "jug", name: "Mina", prize: "Ceramic jug", cents: 30 },
+        { prizeId: "porto", name: "Ren", prize: "Train ticket to Porto", cents: 110 }
+      ];
+    }
+
+    function freshState() {
+      return {
+        view: "lobby",
+        prizeId: null,
+        bidder: "Amina",
+        notice: "",
+        draft: "",
+        phone: "",
+        focus: "",
+        prizes: seedPrizes(),
+        history: seedHistory()
+      };
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
+        if (!saved || !Array.isArray(saved.prizes)) return freshState();
+        return {
+          view: saved.view === "prize" || saved.view === "winners" ? saved.view : "lobby",
+          prizeId: saved.prizeId || null,
+          bidder: typeof saved.bidder === "string" ? saved.bidder : "Amina",
+          notice: "",
+          draft: "",
+          phone: "",
+          focus: "",
+          prizes: saved.prizes,
+          history: Array.isArray(saved.history) ? saved.history : seedHistory()
+        };
+      } catch {
+        return freshState();
+      }
+    }
+
+    let state = loadState();
+    state.pending = null;
+
+    function save() {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        view: state.view,
+        prizeId: state.prizeId,
+        bidder: state.bidder,
+        prizes: state.prizes,
+        history: state.history
+      }));
+    }
+
+    function esc(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function money(cents) {
+      return "$" + (cents / 100).toFixed(2);
+    }
+
+    function numberText(cents) {
+      return (cents / 100).toFixed(2);
+    }
+
+    function samePerson(a, b) {
+      return a.trim().toLowerCase() === b.trim().toLowerCase();
+    }
+
+    function prizeById(id) {
+      return state.prizes.find((prize) => prize.id === id) || null;
+    }
+
+    function findBid(prize, name) {
+      return prize.bids.find((bid) => samePerson(bid.name, name)) || null;
+    }
+
+    function hasPaid(prize, name) {
+      if (!name) return false;
+      return prize.paid.some((paidName) => samePerson(paidName, name)) || Boolean(findBid(prize, name));
+    }
+
+    function lowestUnique(bids) {
+      const counts = new Map();
+      for (const bid of bids) counts.set(bid.cents, (counts.get(bid.cents) || 0) + 1);
+      let best = null;
+      for (const bid of bids) {
+        if (counts.get(bid.cents) !== 1) continue;
+        if (!best || bid.cents < best.cents) best = bid;
+      }
+      return best;
+    }
+
+    function peopleLine(count) {
+      if (count === 0) return "No one has bid";
+      if (count === 1) return "1 person has bid";
+      return count + " people have bid";
+    }
+
+    function photosFor(prize) {
+      if (Array.isArray(prize.photos) && prize.photos.length) return prize.photos;
+      return photoSets[prize.motif] || photoSets.parcel;
+    }
+
+    function parseAmount(raw) {
+      if (!/^\d+(\.\d{1,2})?$/.test(raw)) return null;
+      const cents = Math.round(Number(raw) * 100);
+      if (cents < 1 || cents > 999999) return null;
+      return cents;
+    }
+
+    function go(view, prizeId = null) {
+      state.view = view;
+      state.prizeId = prizeId;
+      state.notice = "";
+      state.draft = "";
+      state.phone = "";
+      state.pending = null;
+      save();
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function parsePhone(raw) {
+      const digits = raw.replace(/\D/g, "");
+      if (digits.length < 7 || digits.length > 15) return null;
+      return raw.trim();
+    }
+
+    function seal(id) {
+      const prize = prizeById(id);
+      const name = state.bidder.trim();
+      const phoneRaw = (document.querySelector("#bid-phone")?.value || state.phone).trim();
+      const raw = (document.querySelector("#bid-amount")?.value || state.draft).trim();
+      state.phone = phoneRaw;
+      state.draft = raw;
+      if (!prize || prize.status !== "open") return;
+      if (!name) {
+        state.notice = "Enter the name you are bidding as.";
+        render();
+        return;
+      }
+      if (findBid(prize, name)) {
+        state.notice = "You already placed a bid on this prize.";
+        render();
+        return;
+      }
+      const phone = parsePhone(phoneRaw);
+      if (!phone) {
+        state.notice = "Enter a phone number we can use to reach you.";
+        state.focus = "phone";
+        render();
+        return;
+      }
+      const cents = parseAmount(raw);
+      if (cents == null) {
+        state.notice = "Write a lowest amount from 0.01 to 9999.99, with up to two decimal places.";
+        state.focus = "bid";
+        render();
+        return;
+      }
+      state.pending = { prizeId: prize.id, name, phone, cents };
+      state.notice = "";
+      render();
+    }
+
+    function dismissPay() {
+      state.pending = null;
+      render();
+    }
+
+    function confirmPay() {
+      const pending = state.pending;
+      if (!pending) return;
+      const prize = prizeById(pending.prizeId);
+      state.pending = null;
+      if (!prize || prize.status !== "open" || findBid(prize, pending.name)) {
+        render();
+        return;
+      }
+      if (!hasPaid(prize, pending.name)) prize.paid.push(pending.name);
+      prize.bids.push({ name: pending.name, cents: pending.cents, phone: pending.phone });
+      state.notice = "";
+      state.draft = "";
+      state.phone = "";
+      save();
+      render();
+    }
+
+    function closePrize(id) {
+      const prize = prizeById(id);
+      if (!prize || prize.status !== "open") return;
+      prize.status = "closed";
+      const winner = lowestUnique(prize.bids);
+      if (winner && !state.history.some((item) => item.prizeId === prize.id)) {
+        state.history.unshift({
+          prizeId: prize.id,
+          name: winner.name,
+          prize: prize.title,
+          cents: winner.cents
+        });
+      }
+      state.view = "winners";
+      state.prizeId = null;
+      state.pending = null;
+      state.notice = winner ? "" : "Nobody won, because every amount was shared.";
+      state.draft = "";
+      state.phone = "";
+      save();
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function resetWalkthrough() {
+      sessionStorage.removeItem(STORAGE_KEY);
+      state = freshState();
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function amountLine(prize) {
+      return "<strong>" + money(prize.entryCents) + "</strong> entry";
+    }
+
+    function headerHtml() {
+      const prizesCurrent = state.view === "lobby" || state.view === "prize";
+      return `
+        <header class="top">
+          <div class="frame bar">
+            <button class="brand" type="button" data-action="lobby">bidlow</button>
+            <nav class="nav" aria-label="Sections">
+              <button type="button" data-action="lobby" ${prizesCurrent ? 'aria-current="page"' : ""}>Prizes</button>
+              <button type="button" data-action="winners" ${state.view === "winners" ? 'aria-current="page"' : ""}>Winners</button>
+            </nav>
+            <form class="who" id="who-form">
+              <label for="bidder-name">Bidding as</label>
+              <input id="bidder-name" name="bidder" autocomplete="off" spellcheck="false" value="${esc(state.bidder)}">
+            </form>
+          </div>
+        </header>`;
+    }
+
+    function cardHtml(prize) {
+      const cover = photosFor(prize)[0];
+      return `<button class="card" type="button" data-action="open" data-id="${esc(prize.id)}">
+        <span class="card-photo"><img src="${esc(cover)}" alt=""></span>
+        <span class="card-name">${esc(prize.title)}</span>
+        <span class="card-item">${esc(prize.note || "Prize")}</span>
+        <span class="card-amount">${amountLine(prize)}</span>
+        <span class="card-count">${peopleLine(prize.bids.length)}</span>
+      </button>`;
+    }
+
+    function lobbyHtml() {
+      if (!state.prizes.length) {
+        return `<div class="page-head"><h1>Prizes</h1></div>
+          <div class="empty"><p>No prizes are listed yet.</p></div>`;
+      }
+      return `
+        <div class="page-head">
+          <h1>Prizes</h1>
+          <p>The lowest number written once wins.</p>
+        </div>
+        <div class="catalog">${state.prizes.map(cardHtml).join("")}</div>`;
+    }
+
+    function galleryHtml(prize) {
+      const photos = photosFor(prize).slice(0, 5);
+      while (photos.length < 5) photos.push(photos[0]);
+      return `<div class="gallery">${photos.map((url, index) =>
+        `<img src="${esc(url)}" alt="${index === 0 ? esc(prize.title) : ""}">`
+      ).join("")}</div>`;
+    }
+
+    function bookHtml(prize) {
+      const count = `<p class="count">${peopleLine(prize.bids.length)}</p>`;
+      const price = `<p class="price"><strong>${money(prize.entryCents)}</strong> entry</p>`;
+      if (prize.status === "closed") {
+        return `${price}${count}
+          <p class="hint">This prize is closed.</p>
+          <button class="btn text" type="button" data-action="winners">Previous winners</button>`;
+      }
+      const name = state.bidder.trim();
+      const bid = name ? findBid(prize, name) : null;
+      if (bid) {
+        return `${price}${count}
+          <p class="outcome">Your bid is in.</p>
+          <p class="hint">We will contact you if you are the bid winner.</p>`;
+      }
+      return `${price}${count}
+        <form id="seal-form" data-id="${esc(prize.id)}">
+          <label for="bid-phone">Phone number</label>
+          <input class="text-input" id="bid-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" value="${esc(state.phone)}">
+          <label for="bid-amount">Lowest amount</label>
+          <input class="bid-input" id="bid-amount" name="amount" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${esc(state.draft)}">
+          <p class="hint">We will contact you if you are the bid winner.</p>
+          <button class="btn" type="submit">Bid</button>
+        </form>`;
+    }
+
+    function winnersHtml() {
+      if (!state.history.length) {
+        return `<div class="page-head"><h1>Previous winners</h1><p>No prizes have been won yet.</p></div>`;
+      }
+      const rows = state.history.map((item) => `<li>
+        <span class="winner-name">${esc(item.name)}</span>
+        <span class="winner-prize">${esc(item.prize)}</span>
+        <span class="winner-bid">${numberText(item.cents)}</span>
+      </li>`).join("");
+      return `
+        <div class="page-head">
+          <h1>Previous winners</h1>
+          <p>Who won, what they won, and the bid that won it.</p>
+        </div>
+        <ul class="winner-list">${rows}</ul>`;
+    }
+
+    function prizeHtml() {
+      const prize = prizeById(state.prizeId);
+      if (!prize) {
+        return `<p>That prize is not listed.</p><button class="btn text" type="button" data-action="lobby">Prizes</button>`;
+      }
+      const closer = prize.status === "open"
+        ? `<p class="hint">In this walkthrough, you close the prize yourself.</p>
+           <button class="btn text" type="button" data-action="close" data-id="${esc(prize.id)}">Close this prize</button>`
+        : "";
+      const story = prize.details || prize.note || "Listed by the prize desk.";
+      return `
+        <button class="btn text back" type="button" data-action="lobby">Prizes</button>
+        <article class="listing">
+          <h1>${esc(prize.title)}</h1>
+          ${prize.note ? `<p class="item-line">${esc(prize.note)}</p>` : ""}
+          ${galleryHtml(prize)}
+          <div class="detail">
+            <div class="story">
+              <p>${esc(story)}</p>
+              <p>Pay the entry, write one number, and wait until the prize closes. The lowest number written once wins.</p>
+              ${closer}
+            </div>
+            <aside class="book">${bookHtml(prize)}</aside>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      const missingPrize = state.view === "prize" && !prizeById(state.prizeId);
+      if (missingPrize) state.view = "lobby";
+      const body = state.view === "winners"
+        ? winnersHtml()
+        : state.view === "prize"
+          ? prizeHtml()
+          : lobbyHtml();
+      document.querySelector("#app").innerHTML = `
+        ${headerHtml()}
+        <main class="frame">
+          <p class="notice" id="notice" role="status" tabindex="-1">${esc(state.notice)}</p>
+          ${body}
+        </main>
+        <footer class="frame foot">
+          <p>Walkthrough only. Nothing is charged. Bids stay in this browser tab.</p>
+          <button class="btn text" type="button" data-action="reset">Start over</button>
+        </footer>
+        ${modalHtml()}`;
+      document.body.classList.toggle("modal-open", Boolean(state.pending));
+      document.title = state.view === "winners"
+        ? "Previous winners — Bidlow"
+        : state.view === "prize"
+          ? (prizeById(state.prizeId)?.title || "Prize") + " — Bidlow"
+          : "Prizes — Bidlow";
+      const focusId = state.focus === "bid" ? "bid-amount" : state.focus === "phone" ? "bid-phone" : "";
+      state.focus = "";
+      if (state.pending) document.querySelector("#pay-fee")?.focus();
+      else if (state.notice) document.querySelector("#notice")?.focus();
+      else if (focusId) document.querySelector("#" + focusId)?.focus();
+    }
+
+    function modalHtml() {
+      const pending = state.pending;
+      const prize = pending ? prizeById(pending.prizeId) : null;
+      if (!pending || !prize) return "";
+      return `
+        <div class="modal-back">
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+            <h2 id="pay-title">Pay the bidding fee</h2>
+            <p class="price"><strong>${money(prize.entryCents)}</strong></p>
+            <p>Your bid is not placed until this fee is paid. We will contact you if you are the bid winner.</p>
+            <button class="btn" id="pay-fee" type="button" data-action="confirm-pay">Pay ${money(prize.entryCents)}</button>
+            <button class="btn text" type="button" data-action="dismiss-pay">Not now</button>
+          </div>
+        </div>`;
+    }
+
+    const app = document.querySelector("#app");
+
+    app.addEventListener("input", (event) => {
+      if (event.target.id === "bidder-name") {
+        const caret = event.target.selectionStart;
+        state.bidder = event.target.value;
+        if (state.view === "prize") {
+          state.notice = "";
+          state.draft = "";
+          state.phone = "";
+          state.pending = null;
+          render();
+          const field = document.querySelector("#bidder-name");
+          if (field) {
+            field.focus();
+            field.setSelectionRange(caret, caret);
+          }
+        }
+        return;
+      }
+      if (event.target.id === "bid-phone") state.phone = event.target.value;
+      if (event.target.id === "bid-amount") state.draft = event.target.value;
+    });
+
+    app.addEventListener("click", (event) => {
+      if (event.target.classList.contains("modal-back")) {
+        dismissPay();
+        return;
+      }
+      const target = event.target.closest("[data-action]");
+      if (!target || !app.contains(target)) return;
+      const action = target.dataset.action;
+      const id = target.dataset.id;
+      if (action === "lobby") go("lobby");
+      if (action === "open") go("prize", id);
+      if (action === "winners") go("winners");
+      if (action === "close") closePrize(id);
+      if (action === "reset") resetWalkthrough();
+      if (action === "confirm-pay") confirmPay();
+      if (action === "dismiss-pay") dismissPay();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.pending) dismissPay();
+    });
+
+    app.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (event.target.id === "seal-form") seal(event.target.dataset.id);
+    });
+
+    render();
+  </script>
+</body>
+</html>
